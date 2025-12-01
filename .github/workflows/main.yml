@@ -1,0 +1,39 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+           cd /home/test.aimwin.in/public_html/mgr-meet-back-main
+           pm2 stop zoom-auth 
+
+           git config --global --add safe.directory /home/test.aimwin.in/public_html/mgr-meet-back-main
+
+           git pull origin main
+
+           export NVM_DIR="$HOME/.nvm"
+           [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+           nvm install 20
+           nvm use 20
+
+           HUSKY=0 npm install
+
+           pm2 restart zoom-auth 
+           pm2 save
