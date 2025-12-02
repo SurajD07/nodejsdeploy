@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
            cd /home/test.aimwin.in/public_html/mgr-meet-back-main
-           pm2 stop zoom 
+           pm2 stop zoom  
 
            git pull origin main
 
